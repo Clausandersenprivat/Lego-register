@@ -155,6 +155,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   display:flex;align-items:center;justify-content:center;line-height:1;}
 .scroll-top-btn.visible{opacity:1;pointer-events:auto;transform:translateY(0);}
 
+.modal-img-wrap{width:100%;display:flex;justify-content:center;margin:12px 0;background:var(--surface2);border-radius:12px;overflow:hidden;min-height:60px;}
+.modal-img{max-width:100%;max-height:220px;object-fit:contain;}
+.modal-img-fig{max-height:160px;}
+
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.92);
   display:none;align-items:flex-end;}
@@ -430,17 +434,7 @@ function mkSetCard(s){
   const badgeLabel=ua?'Uåbnet':forseglet?'Forseglet':'Brugt';
   const r=roi(s.marked,s.vejl);
   const roiStr=r?`<span style="font-size:10px;color:${r.pos?'var(--green)':'var(--accent)'}"> ${r.pos?'▲':'▼'}${Math.abs(r.pct)}%</span>`:'';
-  const imgUrl=`https://img.bricklink.com/ItemImage/SN/0/${s.nr}-1.png`;
-  c.innerHTML=`
-    <div class="card-top">
-      <div class="badge ${badgeClass}">${badgeLabel}</div>
-      <div class="card-img-wrap">
-        <img class="card-img" src="${imgUrl}" loading="lazy" onerror="this.style.display='none'">
-      </div>
-      <div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div>
-      <div class="card-right"><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div>
-    </div>
-    <div class="card-tag">${s.tema}</div>`;
+  c.innerHTML=`<div class="card-top"><div class="badge ${badgeClass}">${badgeLabel}</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div><div class="card-right"><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
   c.onclick=()=>openSetModal(s);return c;
 }
 function mkFigCard(f){
@@ -458,11 +452,7 @@ function mkFigCard(f){
     if(hasBrugt) saetBadge=`<span class="badge-saet">📦 ${setInfo.brugt[0].split(' (#')[0]}</span>`;
     else if(hasUaabnet) saetBadge=`<span class="badge-saet badge-saet-uaabnet">🔒 ${setInfo.uaabnet[0].split(' (#')[0]}</span>`;
   }
-  const hasImg = f.bl_nr && f.bl_nr!=='None' && f.bl_nr!=='nan';
-  const imgHtml = hasImg
-    ? `<img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="lazy" onerror="this.style.display='none'">`
-    : '';
-  c.innerHTML=`<div class="fig-top"><div class="fig-thumb-wrap">${imgHtml}<div class="badge badge-fig" style="flex-shrink:0">Fig</div></div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>${saetBadge}</div><div class="fig-right">${prisStr}</div></div>`;
+  c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>${saetBadge}</div><div class="fig-right">${prisStr}</div></div>`;
   c.onclick=()=>openFigModal(f);return c;
 }
 
@@ -652,6 +642,9 @@ function openSetModal(s){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${s.navn}</div>
     <div class="modal-tema">${s.tema} · #${s.nr} · ${s.aar}</div>
+    <div class="modal-img-wrap">
+      <img class="modal-img" src="https://img.bricklink.com/ItemImage/SN/0/${s.nr}-1.png" onerror="this.parentNode.style.display='none'" loading="lazy">
+    </div>
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Markedsværdi</div><div class="modal-price-main">${dkkS(s.marked)} kr.</div>${roiHtml}</div>
       <div style="text-align:right"><div style="font-size:11px;color:var(--text2)">USD</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text2)">${usd(s.marked)}</div>${s.vejl?`<div class="modal-price-sub">Vejl. ${dkk(s.vejl)}</div>`:''}</div>
@@ -678,6 +671,7 @@ function openFigModal(f){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${f.navn}</div>
     <div class="modal-tema">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>
+    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" onerror="this.parentNode.style.display='none'" loading="lazy"></div>`:''}
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Samlet værdi (${f.antal} stk.)</div><div class="modal-price-main">${dkkS(f.total)} kr.</div></div>
       <div style="text-align:right"><div style="font-size:11px;color:var(--text2)">Pr. stk.</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text2)">${dkk(f.pris)}</div></div>
