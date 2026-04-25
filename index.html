@@ -106,6 +106,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .badge-saet-uaabnet{background:rgba(168,85,247,0.15);color:var(--purple);border-color:rgba(168,85,247,0.3);}
 .badge-custom{background:rgba(249,115,22,0.15);color:var(--orange);}
 
+.card-img-wrap{width:52px;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:6px;background:var(--surface2);}
+.card-img{max-width:52px;max-height:40px;object-fit:contain;}
+.fig-thumb-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.fig-thumb-img{width:36px;height:36px;object-fit:contain;border-radius:6px;background:var(--surface2);}
+
 /* FIGUR KORT */
 .fig-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;}
 .fig-card:active{opacity:0.82;}
@@ -417,6 +422,27 @@ function mkSetCard(s){
   c.innerHTML=`<div class="card-top"><div class="badge ${badgeClass}">${badgeLabel}</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div><div class="card-right"><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
   c.onclick=()=>openSetModal(s);return c;
 }
+function mkSetCard(s){
+  const c=mkEl('div','card');
+  const ua=s.stand==='Uåbnet';
+  const forseglet=s.stand==='Forseglet';
+  const badgeClass=ua?'badge-uaabnet':forseglet?'badge-forseglet':'badge-brugt';
+  const badgeLabel=ua?'Uåbnet':forseglet?'Forseglet':'Brugt';
+  const r=roi(s.marked,s.vejl);
+  const roiStr=r?`<span style="font-size:10px;color:${r.pos?'var(--green)':'var(--accent)'}"> ${r.pos?'▲':'▼'}${Math.abs(r.pct)}%</span>`:'';
+  const imgUrl=`https://img.bricklink.com/ItemImage/SN/0/${s.nr}-1.png`;
+  c.innerHTML=`
+    <div class="card-top">
+      <div class="badge ${badgeClass}">${badgeLabel}</div>
+      <div class="card-img-wrap">
+        <img class="card-img" src="${imgUrl}" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div>
+      <div class="card-right"><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div>
+    </div>
+    <div class="card-tag">${s.tema}</div>`;
+  c.onclick=()=>openSetModal(s);return c;
+}
 function mkFigCard(f){
   const c=mkEl('div','fig-card');
   const prisFremhævet = figSort==='pris';
@@ -432,7 +458,11 @@ function mkFigCard(f){
     if(hasBrugt) saetBadge=`<span class="badge-saet">📦 ${setInfo.brugt[0].split(' (#')[0]}</span>`;
     else if(hasUaabnet) saetBadge=`<span class="badge-saet badge-saet-uaabnet">🔒 ${setInfo.uaabnet[0].split(' (#')[0]}</span>`;
   }
-  c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>${saetBadge}</div><div class="fig-right">${prisStr}</div></div>`;
+  const hasImg = f.bl_nr && f.bl_nr!=='None' && f.bl_nr!=='nan';
+  const imgHtml = hasImg
+    ? `<img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="lazy" onerror="this.style.display='none'">`
+    : '';
+  c.innerHTML=`<div class="fig-top"><div class="fig-thumb-wrap">${imgHtml}<div class="badge badge-fig" style="flex-shrink:0">Fig</div></div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>${saetBadge}</div><div class="fig-right">${prisStr}</div></div>`;
   c.onclick=()=>openFigModal(f);return c;
 }
 
