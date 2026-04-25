@@ -14,8 +14,8 @@
   --accent:#e3000b;--accent2:#ffcc00;--text:#f0f0f5;--text2:#8888aa;
   --green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--orange:#f97316;
   --radius:14px;
-  --safe-top:max(env(safe-area-inset-top,0px), 44px);
-  --safe-bottom:max(env(safe-area-inset-bottom,0px), 16px);
+  --safe-top:max(env(safe-area-inset-top,0px), 47px);
+  --safe-bottom:max(env(safe-area-inset-bottom,0px), 20px);
   --nav-h:0px;
   --tabs-h:0px;
 }
@@ -23,19 +23,19 @@
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;}
 
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:calc(var(--safe-top)+6px) 16px 12px;
+  padding:calc(var(--safe-top)+8px) 16px 14px 72px;
   background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .nav-back{font-size:17px;font-weight:600;cursor:pointer;padding:6px 12px 6px 0;
   color:var(--accent2);display:none;line-height:1;white-space:nowrap;
   background:none;border:none;font-family:'Inter',sans-serif;}
 .nav-back.visible{display:flex;align-items:center;gap:4px;}
-.nav-titles{flex:1;min-width:0;}
-.nav-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent2);line-height:1.1;}
+.nav-titles{flex:1;min-width:0;margin-left:28px;}
+.nav-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent2);line-height:1.1;margin-top:20px;}
 .nav-sub{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 .tabs{position:fixed;bottom:0;left:0;right:0;z-index:100;
-  padding:8px 8px calc(var(--safe-bottom)+4px);
+  padding:10px 8px calc(var(--safe-bottom)+6px);
   background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid var(--border);display:flex;gap:4px;}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -806,17 +806,30 @@ function fixNavPadding(){
   const navH=nav.getBoundingClientRect().height;
   const tabsVisible=tabs.style.display!=='none';
   const tabsH=tabsVisible?tabs.getBoundingClientRect().height:0;
-  content.style.paddingTop=(navH+4)+'px';
-  content.style.paddingBottom=(tabsH+8)+'px';
-  // Scroll-knap placering
+  if(navH>0){
+    content.style.paddingTop=(navH+4)+'px';
+  }
+  if(tabsH>0){
+    content.style.paddingBottom=(tabsH+8)+'px';
+  }
   const btn=document.getElementById('scroll-top-btn');
-  if(btn) btn.style.bottom=(tabsH+16)+'px';
+  if(btn&&tabsH>0) btn.style.bottom=(tabsH+16)+'px';
 }
 function init(){
-  fixNavPadding();
+  // Kør fixNavPadding med requestAnimationFrame + flere retries for iPhone PWA
+  requestAnimationFrame(()=>{
+    fixNavPadding();
+    requestAnimationFrame(fixNavPadding);
+  });
   setTimeout(fixNavPadding,100);
-  setTimeout(fixNavPadding,500);
+  setTimeout(fixNavPadding,300);
+  setTimeout(fixNavPadding,800);
+  setTimeout(fixNavPadding,1500);
   window.addEventListener('resize',fixNavPadding);
+  window.addEventListener('orientationchange',()=>{
+    setTimeout(fixNavPadding,200);
+    setTimeout(fixNavPadding,600);
+  });
   initOversigt();
   renderSetFilters();renderSetList();
   renderFigFilters();renderFigList();
