@@ -720,6 +720,7 @@ function openSetModal(s){
   document.getElementById('modal-overlay').classList.add('open');
 }
 function openFigModal(f){
+  console.log('openFigModal called', f.navn, f.bl_nr);
   const blLink=f.bl_nr&&f.bl_nr!=='None'&&f.bl_nr!=='-'?`
     <div class="modal-section-label">Se mere online</div>
     <div class="modal-links">
@@ -728,7 +729,7 @@ function openFigModal(f){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${f.navn}</div>
     <div class="modal-tema">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>
-    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap" id="fig-img-wrap"><img class="modal-img modal-img-fig" src="https://brickranker.com/img/minifigures/${f.bl_nr}.png" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png';this.onerror=function(){this.parentNode.innerHTML='<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;gap:6px;\\'><span style=\\'font-size:28px;\\'>🧍</span><a href=\\'https://www.bricklink.com/v2/catalog/catalogitem.page?M=${f.bl_nr}\\' target=\\'_blank\\' style=\\'color:var(--accent2);font-size:11px;\\'>Se på BrickLink →</a></div>'}" loading="lazy"></div>`:''}
+    ${f.bl_nr&&f.bl_nr!=='None'?'<div class="modal-img-wrap" id="fig-img-wrap"></div>':''}
 
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Samlet værdi (${f.antal} stk.)</div><div class="modal-price-main">${dkkS(f.total)} kr.</div></div>
@@ -739,6 +740,24 @@ function openFigModal(f){
     <div class="modal-row"><span class="modal-key">År</span><span class="modal-val">${f.aar}</span></div>
     ${blLink}
     <button class="close-btn" onclick="closeModal()">Luk</button>`;
+  // Sæt figurbillede direkte via JS
+  if(f.bl_nr && f.bl_nr!=='None'){
+    var mb = document.getElementById('modal-body');
+    var wrap = mb ? mb.querySelector('.modal-img-wrap') : null;
+    if(wrap){
+      var imgUrl = 'https://img.bricklink.com/ItemImage/MN/0/' + f.bl_nr + '.png';
+      wrap.innerHTML = '<p style="font-size:10px;color:gray">Henter: ' + f.bl_nr + '</p>';
+      var img = new Image();
+      img.className = 'modal-img modal-img-fig';
+      img.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img); };
+      img.onerror = function(){ wrap.innerHTML='<p style="font-size:10px;color:red">Fejl: ' + imgUrl + '</p>'; };
+      img.src = imgUrl;
+    } else {
+      // wrap ikke fundet - vis fejl i modal-body
+      var mb2 = document.getElementById('modal-body');
+      if(mb2) mb2.insertAdjacentHTML('afterbegin','<p style="color:orange;font-size:10px">WRAP IKKE FUNDET</p>');
+    }
+  }
   document.getElementById('modal-overlay').classList.add('open');
 }
 function openMocModal(s){
