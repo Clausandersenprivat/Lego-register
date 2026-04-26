@@ -48,17 +48,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .content{min-height:100vh;}
 .page{display:none;}.page.active{display:block;}
 
-/* OVERSIGT */
-.hero{margin:16px;padding:22px;
+/* OVERSIGT – låst til én skærm */
+.page-oversigt-inner{
+  display:flex;flex-direction:column;
+  height:calc(100vh - var(--nav-actual,80px) - var(--tabs-actual,70px));
+  overflow:hidden;
+  padding:10px 0 0;
+}
+.hero{margin:0 16px 10px;padding:18px;
   background:linear-gradient(135deg,#1a0a0c 0%,#2d1215 50%,#1a0a0c 100%);
-  border:1px solid rgba(227,0,11,0.3);border-radius:var(--radius);position:relative;overflow:hidden;cursor:pointer;}
+  border:1px solid rgba(227,0,11,0.3);border-radius:var(--radius);position:relative;overflow:hidden;cursor:pointer;flex-shrink:0;}
 .hero-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:4px;}
 .hero-value{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:1px;color:var(--text);line-height:1;}
 .hero-usd{font-size:13px;color:var(--text2);margin-top:3px;}
 .hero-tap{font-size:11px;color:rgba(255,204,0,0.45);margin-top:6px;}
 
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 16px;}
-.stat-card{background:var(--surface);border:1px solid rgba(255,204,0,0.1);border-radius:var(--radius);padding:16px;cursor:pointer;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px;flex:1;min-height:0;}
+.stat-card{background:var(--surface);border:1px solid rgba(255,204,0,0.1);border-radius:var(--radius);padding:16px;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
+
 .stat-card:active{opacity:0.8;}
 .stat-icon{font-size:22px;margin-bottom:8px;}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;line-height:1;}
@@ -233,6 +241,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <div class="content">
   <!-- OVERSIGT -->
   <div class="page active" id="page-oversigt">
+    <div class="page-oversigt-inner">
     <div class="hero" onclick="pushDetail('total')">
       <div class="hero-label">Samlet markedsværdi</div>
       <div class="hero-value" id="hero-dkk"></div>
@@ -240,6 +249,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="hero-tap">Tryk for detaljeret oversigt →</div>
     </div>
     <div class="stats-grid" id="stats-grid"></div>
+    </div>
 
   </div>
 
@@ -718,7 +728,7 @@ function openFigModal(f){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${f.navn}</div>
     <div class="modal-tema">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>
-    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" onerror="this.parentNode.style.display='none'" loading="lazy"></div>`:''}
+    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr.toUpperCase()}.png" onerror="this.parentNode.style.display='none'" loading="lazy"></div>`:''}
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Samlet værdi (${f.antal} stk.)</div><div class="modal-price-main">${dkkS(f.total)} kr.</div></div>
       <div style="text-align:right"><div style="font-size:11px;color:var(--text2)">Pr. stk.</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text2)">${dkk(f.pris)}</div></div>
@@ -875,12 +885,14 @@ function fixNavPadding(){
   const tabsH=tabsVisible?tabs.getBoundingClientRect().height:0;
   if(navH>0){
     content.style.paddingTop=(navH+4)+'px';
+    document.documentElement.style.setProperty('--nav-actual', navH+'px');
   }
   if(tabsH>0){
     content.style.paddingBottom=(tabsH+8)+'px';
+    document.documentElement.style.setProperty('--tabs-actual', tabsH+'px');
   } else {
-    // I detail-view: giv plads til flydende tilbage-knap
     content.style.paddingBottom='100px';
+    document.documentElement.style.setProperty('--tabs-actual', '100px');
   }
   const btn=document.getElementById('scroll-top-btn');
   if(btn&&tabsH>0) btn.style.bottom=(tabsH+16)+'px';
