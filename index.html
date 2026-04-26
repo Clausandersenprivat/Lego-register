@@ -745,20 +745,26 @@ function openFigModal(f){
     var mb = document.getElementById('modal-body');
     var wrap = mb ? mb.querySelector('.modal-img-wrap') : null;
     if(wrap){
-      // BrickRanker CDN: prøv .jpg først, så .png
       var blnr = f.bl_nr;
-      var img = new Image();
-      img.className = 'modal-img modal-img-fig';
-      img.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img); };
-      img.onerror = function(){
-        // Prøv .png som fallback
-        var img2 = new Image();
-        img2.className = 'modal-img modal-img-fig';
-        img2.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img2); };
-        img2.onerror = function(){ wrap.style.display='none'; };
-        img2.src = 'https://brickranker.com/img/minifigures/' + blnr + '.png';
-      };
-      img.src = 'https://brickranker.com/img/minifigures/' + blnr + '.jpg';
+      function tryImg(urls, idx){
+        if(idx >= urls.length){ wrap.style.display='none'; return; }
+        var img = new Image();
+        img.className = 'modal-img modal-img-fig';
+        img.onload = function(){
+          wrap.innerHTML='';
+          wrap.appendChild(img);
+          console.log('Billede loadet fra:', urls[idx]);
+        };
+        img.onerror = function(){
+          console.log('Fejl ved:', urls[idx]);
+          tryImg(urls, idx+1);
+        };
+        img.src = urls[idx];
+      }
+      tryImg([
+        'https://img.bricklink.com/ItemImage/MN/0/' + blnr + '.png',
+        'https://img.bricklink.com/ItemImage/MN/0/' + blnr + '.jpg'
+      ], 0);
     }
   }
   document.getElementById('modal-overlay').classList.add('open');
