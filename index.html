@@ -729,7 +729,7 @@ function openFigModal(f){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${f.navn}</div>
     <div class="modal-tema">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>
-    ${f.bl_nr&&f.bl_nr!=='None'?'<div class="modal-img-wrap" id="fig-img-wrap"></div>':''}
+    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:''}
 
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Samlet værdi (${f.antal} stk.)</div><div class="modal-price-main">${dkkS(f.total)} kr.</div></div>
@@ -740,33 +740,7 @@ function openFigModal(f){
     <div class="modal-row"><span class="modal-key">År</span><span class="modal-val">${f.aar}</span></div>
     ${blLink}
     <button class="close-btn" onclick="closeModal()">Luk</button>`;
-  // Sæt figurbillede direkte via JS
-  if(f.bl_nr && f.bl_nr!=='None'){
-    var mb = document.getElementById('modal-body');
-    var wrap = mb ? mb.querySelector('.modal-img-wrap') : null;
-    if(wrap){
-      var blnr = f.bl_nr;
-      function tryImg(urls, idx){
-        if(idx >= urls.length){ wrap.style.display='none'; return; }
-        var img = new Image();
-        img.className = 'modal-img modal-img-fig';
-        img.onload = function(){
-          wrap.innerHTML='';
-          wrap.appendChild(img);
-          console.log('Billede loadet fra:', urls[idx]);
-        };
-        img.onerror = function(){
-          console.log('Fejl ved:', urls[idx]);
-          tryImg(urls, idx+1);
-        };
-        img.src = urls[idx];
-      }
-      tryImg([
-        'https://img.bricklink.com/ItemImage/MN/0/' + blnr + '.png?v=3',
-        'https://img.bricklink.com/ItemImage/MN/0/' + blnr + '.jpg?v=3'
-      ], 0);
-    }
-  }
+
   document.getElementById('modal-overlay').classList.add('open');
 }
 function openMocModal(s){
