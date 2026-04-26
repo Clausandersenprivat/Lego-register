@@ -745,15 +745,20 @@ function openFigModal(f){
     var mb = document.getElementById('modal-body');
     var wrap = mb ? mb.querySelector('.modal-img-wrap') : null;
     if(wrap){
-      // BrickLink bruger .jpg for sw/hp, .png for resten
-      var prefix = f.bl_nr.replace(/[0-9]/g,'');
-      var ext = (prefix==='sw'||prefix==='hp'||prefix==='sh') ? 'jpg' : 'png';
-      var imgUrl = 'https://img.bricklink.com/ItemImage/MN/0/' + f.bl_nr + '.' + ext;
+      // BrickRanker CDN: prøv .jpg først, så .png
+      var blnr = f.bl_nr;
       var img = new Image();
       img.className = 'modal-img modal-img-fig';
       img.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img); };
-      img.onerror = function(){ wrap.style.display='none'; };
-      img.src = imgUrl;
+      img.onerror = function(){
+        // Prøv .png som fallback
+        var img2 = new Image();
+        img2.className = 'modal-img modal-img-fig';
+        img2.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img2); };
+        img2.onerror = function(){ wrap.style.display='none'; };
+        img2.src = 'https://brickranker.com/img/minifigures/' + blnr + '.png';
+      };
+      img.src = 'https://brickranker.com/img/minifigures/' + blnr + '.jpg';
     }
   }
   document.getElementById('modal-overlay').classList.add('open');
