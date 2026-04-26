@@ -700,7 +700,7 @@ function openSetModal(s){
     <div class="modal-title">${s.navn}</div>
     <div class="modal-tema">${s.tema} · #${s.nr} · ${s.aar}</div>
     <div class="modal-img-wrap">
-      <img class="modal-img" src="https://img.bricklink.com/ItemImage/SN/0/${s.nr}-1.png" onerror="this.parentNode.style.display='none'" loading="lazy">
+      <img class="modal-img" src="https://img.bricklink.com/ItemImage/SN/0/${s.nr}-1.png" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;\\'>Intet billede tilgængeligt</div>'" loading="lazy">
     </div>
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Markedsværdi</div><div class="modal-price-main">${dkkS(s.marked)} kr.</div>${roiHtml}</div>
@@ -728,7 +728,8 @@ function openFigModal(f){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${f.navn}</div>
     <div class="modal-tema">${f.tema}${f.bl_nr&&f.bl_nr!=='None'?' · '+f.bl_nr:''}</div>
-    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr.toUpperCase()}.png" onerror="this.parentNode.style.display='none'" loading="lazy"></div>`:''}
+    ${f.bl_nr&&f.bl_nr!=='None'?`<div class="modal-img-wrap" id="fig-img-wrap"><img class="modal-img modal-img-fig" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;gap:6px;\\'><span style=\\'font-size:28px;\\'>🧍</span><span>Intet billede tilgængeligt</span><a href=\\'https://www.bricklink.com/v2/catalog/catalogitem.page?M=${f.bl_nr}\\' target=\\'_blank\\' style=\\'color:var(--accent2);font-size:11px;\\'>Se på BrickLink →</a></div>'" loading="lazy"></div>`:''}
+
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Samlet værdi (${f.antal} stk.)</div><div class="modal-price-main">${dkkS(f.total)} kr.</div></div>
       <div style="text-align:right"><div style="font-size:11px;color:var(--text2)">Pr. stk.</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text2)">${dkk(f.pris)}</div></div>
