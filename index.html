@@ -745,17 +745,15 @@ function openFigModal(f){
     var mb = document.getElementById('modal-body');
     var wrap = mb ? mb.querySelector('.modal-img-wrap') : null;
     if(wrap){
-      var imgUrl = 'https://img.bricklink.com/ItemImage/MN/0/' + f.bl_nr + '.png';
-      wrap.innerHTML = '<p style="font-size:10px;color:gray">Henter: ' + f.bl_nr + '</p>';
+      // BrickLink bruger .jpg for sw/hp, .png for resten
+      var prefix = f.bl_nr.replace(/[0-9]/g,'');
+      var ext = (prefix==='sw'||prefix==='hp'||prefix==='sh') ? 'jpg' : 'png';
+      var imgUrl = 'https://img.bricklink.com/ItemImage/MN/0/' + f.bl_nr + '.' + ext;
       var img = new Image();
       img.className = 'modal-img modal-img-fig';
       img.onload = function(){ wrap.innerHTML=''; wrap.appendChild(img); };
-      img.onerror = function(){ wrap.innerHTML='<p style="font-size:10px;color:red">Fejl: ' + imgUrl + '</p>'; };
+      img.onerror = function(){ wrap.style.display='none'; };
       img.src = imgUrl;
-    } else {
-      // wrap ikke fundet - vis fejl i modal-body
-      var mb2 = document.getElementById('modal-body');
-      if(mb2) mb2.insertAdjacentHTML('afterbegin','<p style="color:orange;font-size:10px">WRAP IKKE FUNDET</p>');
     }
   }
   document.getElementById('modal-overlay').classList.add('open');
