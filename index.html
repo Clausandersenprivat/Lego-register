@@ -675,7 +675,7 @@ function renderStats(){
     const figTemaStats={};
     D.lego_figs.forEach(f=>{
       const t=f.tema||'Ukendt';
-      if(!figTemaStats[t]) figTemaStats[t]={antal:0,usd:0};
+      if(!figTemaStats[t]) figTemaStats[t]={antal:0,usd:0, "poc043": {"brugt": ["Queen Anne's Revenge (#4195)"], "uaabnet": []}, "gen038": {"brugt": ["Queen Anne's Revenge (#4195)"], "uaabnet": []}, "poc035": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc036": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc037": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc038": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc039": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc040": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc041": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}, "poc042": {"brugt": ["Silent Mary (#71042)"], "uaabnet": []}};
       figTemaStats[t].antal+=f.antal;
       figTemaStats[t].usd+=f.total;
     });
