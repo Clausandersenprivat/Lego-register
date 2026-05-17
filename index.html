@@ -2,7 +2,6 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -532,7 +531,7 @@ function renderDetail(type,extra){
 function mkMocCard(s){
   const c=document.createElement('div');c.className='card';c.onclick=()=>openMocModal(s);
   const imgSrc=s.img_url?(s.img_url.startsWith('data:')?s.img_url:'https://wsrv.nl/?url='+encodeURIComponent(s.img_url)+'&w=120&output=jpg'):'';
-  const imgHtml=imgSrc?`<div class="card-img-wrap"><img class="card-img" src="${imgSrc}" loading="eager" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none'"></div>`:'';
+  const imgHtml=imgSrc?`<div class="card-img-wrap"><img class="card-img" src="${imgSrc}" loading="eager" onerror="this.parentNode.style.display='none'"></div>`:'';
   c.innerHTML=`<div class="card-top"><div class="badge badge-moc">MOC</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">${s.aar}${s.dele?' · '+s.dele.toLocaleString('da-DK')+' dele':''}</div></div><div class="card-right">${imgHtml}<div class="card-dkk">${dkk(s.marked)}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
   return c;
 }
@@ -545,7 +544,7 @@ function mkSetCard(s){
   const r=roi(s.marked,s.vejl);
   const roiStr=r?`<span style="font-size:10px;color:${r.pos?'var(--green)':'var(--accent)'}"> ${r.pos?'▲':'▼'}${Math.abs(r.pct)}%</span>`:'';
   const setImgSrc=s.img_url?(s.img_url.startsWith('data:')?s.img_url:'https://wsrv.nl/?url='+encodeURIComponent(s.img_url)+'&w=120&output=jpg'):'https://img.bricklink.com/ItemImage/SN/0/'+(IMG_NR_OVERRIDE[s.nr]||s.nr)+'-1.png';
-  c.innerHTML=`<div class="card-top"><div class="badge ${badgeClass}">${badgeLabel}</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div><div class="card-right"><div class="card-img-wrap"><img class="card-img" src="${setImgSrc}" loading="eager" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none'"></div><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
+  c.innerHTML=`<div class="card-top"><div class="badge ${badgeClass}">${badgeLabel}</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div><div class="card-right"><div class="card-img-wrap"><img class="card-img" src="${setImgSrc}" loading="eager" onerror="this.parentNode.style.display='none'"></div><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
   c.onclick=()=>{haptic();openSetModal(s);}; return c;
 }
 function mkFigCard(f){
@@ -563,7 +562,7 @@ function mkFigCard(f){
     if(hasBrugt) saetBadge=`<span class="badge-saet">📦 ${setInfo.brugt[0].split(' (#')[0]}</span>`;
     else if(hasUaabnet) saetBadge=`<span class="badge-saet badge-saet-uaabnet">🔒 ${setInfo.uaabnet[0].split(' (#')[0]}</span>`;
   }
-  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" referrerpolicy="no-referrer" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:"";
+  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:"";
   c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=="None"?" · "+f.bl_nr:""}</div>${saetBadge}</div><div class="fig-right">${figThumb}${prisStr}</div></div>`;
   c.onclick=()=>{haptic();openFigModal(f);}; return c;
 }
@@ -819,7 +818,7 @@ function openSetModal(s){
     <div class="modal-title">${s.navn}</div>
     <div class="modal-tema">${s.tema} · #${s.nr} · ${s.aar}</div>
     <div class="modal-img-wrap">
-      <img class="modal-img" referrerpolicy="no-referrer" src="${s.img_url?(s.img_url.startsWith('data:')?s.img_url:'https://wsrv.nl/?url='+encodeURIComponent(s.img_url)+'&w=600&output=jpg'):'https://img.bricklink.com/ItemImage/SN/0/'+(IMG_NR_OVERRIDE[s.nr]||s.nr)+'-1.png'}" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;\\'>Intet billede tilgængeligt</div>'" loading="eager">
+      <img class="modal-img" src="${s.img_url?(s.img_url.startsWith('data:')?s.img_url:'https://wsrv.nl/?url='+encodeURIComponent(s.img_url)+'&w=600&output=jpg'):'https://img.bricklink.com/ItemImage/SN/0/'+(IMG_NR_OVERRIDE[s.nr]||s.nr)+'-1.png'}" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;\\'>Intet billede tilgængeligt</div>'" loading="eager">
     </div>
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Markedsværdi</div><div class="modal-price-main">${dkkS(s.marked)} kr.</div>${roiHtml}</div>
@@ -867,7 +866,7 @@ function openMocModal(s){
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-title">${s.navn}</div>
     <div class="modal-tema">${s.tema} · MOC</div>
-    ${mocImgSrc?`<div class="modal-img-wrap"><img class="modal-img" referrerpolicy="no-referrer" src="${mocImgSrc}" loading="eager" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;\\'>Intet billede tilgængeligt</div>'"></div>`:''}
+    ${mocImgSrc?`<div class="modal-img-wrap"><img class="modal-img" src="${mocImgSrc}" loading="eager" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100px;color:var(--text2);font-size:12px;\\'>Intet billede tilgængeligt</div>'"></div>`:''}
     <div class="modal-price-block">
       <div><div style="font-size:11px;color:var(--text2);margin-bottom:2px">Markedsværdi</div><div class="modal-price-main">${dkkS(s.marked)} kr.</div></div>
       <div style="text-align:right"><div style="font-size:11px;color:var(--text2)">USD</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text2)">${usd(s.marked)}</div></div>
@@ -973,7 +972,7 @@ function renderGlobalSearch(q){
       }
       const c=mkEl('div','fig-card');
       const prisStr=`<div class="fig-dkk">${dkkS(f.pris)} kr.<span style="font-size:11px;font-weight:400;color:var(--text2)">/stk</span></div><div class="fig-usd">${usd(f.pris)}/stk</div><div class="fig-count">×${f.antal} · total ${dkk(f.total)}</div>`;
-      const figThumb2=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" referrerpolicy="no-referrer" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:"";
+      const figThumb2=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:"";
       c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=="None"?" · "+f.bl_nr:""}</div>${saetBadge}</div><div class="fig-right">${figThumb2}${prisStr}</div></div>`;
       c.onclick=()=>openFigModal(f);
       el.appendChild(c);
