@@ -395,6 +395,8 @@ function showTab(name,btn){
     setTimeout(()=>document.getElementById('global-search').focus(),300);
     renderGlobalSearch(document.getElementById('global-search').value);
   }
+  if(name==='figurer'){renderFigFilters();renderFigList();}
+  if(name==='saets'){renderSetFilters();renderSetList();}
 }
 function pushDetail(type,extra){
   const restore=()=>{activatePage('oversigt');setNav('My Precious','',false);};
