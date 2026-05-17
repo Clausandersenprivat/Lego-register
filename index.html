@@ -585,17 +585,9 @@ function mkFigCard(f){
     if(hasBrugt) saetBadge=`<span class="badge-saet">📦 ${setInfo.brugt[0].split(' (#')[0]}</span>`;
     else if(hasUaabnet) saetBadge=`<span class="badge-saet badge-saet-uaabnet">🔒 ${setInfo.uaabnet[0].split(' (#')[0]}</span>`;
   }
-  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" id="blimg-${f.bl_nr}" src="" style="display:none"><div class="bl-img-placeholder" id="blph-${f.bl_nr}" style="width:36px;height:36px;background:var(--surface2);border-radius:6px"></div></div>`:"";
+  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=null;"></div>`:"";
   c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=="None"?" · "+f.bl_nr:""}</div>${saetBadge}</div><div class="fig-right">${figThumb}${prisStr}</div></div>`;
-  c.onclick=()=>{haptic();openFigModal(f);}; 
-  if(f.bl_nr&&f.bl_nr!=="None"){
-    getBLImgSrc(f.bl_nr, src=>{
-      const img=c.querySelector('#blimg-'+f.bl_nr);
-      const ph=c.querySelector('#blph-'+f.bl_nr);
-      if(img&&src){img.src=src;img.style.display='';if(ph)ph.style.display='none';}
-    });
-  }
-  return c;
+  c.onclick=()=>{haptic();openFigModal(f);}; return c;
 }
 
 /* ---------- SÆT ---------- */
@@ -659,8 +651,7 @@ function renderSetList(){
   const showOverview=['Alle','Brugt','Uåbnet','Forseglet','Aktiv'].includes(setFilter)&&!setSearch;
   const listEl=document.getElementById('set-list');
   const countEl=document.getElementById('set-count');
-  const sortEl=document.querySelector('#page-saets .sort-bar');
-  listEl.style.display=showOverview?'none':'';
+  const sortEl=document.querySelector('#page-saets .sort-bar');if(sortEl)sortEl.style.display=showOverview?'none':'';
   countEl.style.display=showOverview?'none':'';
   if(sortEl)sortEl.style.display=showOverview?'none':'';
   if(showOverview)return;
@@ -709,7 +700,7 @@ function renderFigFilters(){
   const showList=(figFilter!=='Alle'||figSearch);
   document.getElementById('fig-list').style.display=showList?'':'none';
   document.getElementById('fig-count').style.display=showList?'':'none';
-  document.querySelector('#page-figurer .sort-bar').style.display=showList?'':'none';
+  const figSortBar=document.querySelector('#page-figurer .sort-bar');if(figSortBar)figSortBar.style.display=showList?'':'none';
 }
 function renderFigList(){
   if(figFilter==='Alle'&&!figSearch)return;
