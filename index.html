@@ -547,6 +547,29 @@ function mkSetCard(s){
   c.innerHTML=`<div class="card-top"><div class="badge ${badgeClass}">${badgeLabel}</div><div class="card-info"><div class="card-naam">${s.navn}</div><div class="card-meta">#${s.nr} · ${s.aar} · ${s.dele?s.dele.toLocaleString('da-DK'):'?'} dele${s.figs?' · '+s.figs+' fig.':''}</div></div><div class="card-right"><div class="card-img-wrap"><img class="card-img" src="${setImgSrc}" loading="eager" onerror="this.parentNode.style.display='none'"></div><div class="card-dkk">${dkkS(s.marked)} kr.${roiStr}</div><div class="card-usd">${usd(s.marked)}</div></div></div><div class="card-tag">${s.tema}</div>`;
   c.onclick=()=>{haptic();openSetModal(s);}; return c;
 }
+
+// Client-side BL image cache
+const BL_IMG_CACHE = {};
+function getBLImgSrc(bl_nr, callback) {
+  if (!bl_nr || bl_nr === 'None') { callback(''); return; }
+  if (BL_IMG_CACHE[bl_nr]) { callback(BL_IMG_CACHE[bl_nr]); return; }
+  const tryFetch = (ext) => {
+    const url = `https://img.bricklink.com/ItemImage/MN/0/${bl_nr}.${ext}`;
+    fetch(url, {mode:'cors'}).then(r => {
+      if (r.ok) return r.blob();
+      throw new Error('failed');
+    }).then(blob => {
+      const reader = new FileReader();
+      reader.onload = () => { BL_IMG_CACHE[bl_nr] = reader.result; callback(reader.result); };
+      reader.readAsDataURL(blob);
+    }).catch(() => {
+      if (ext === 'png') tryFetch('jpg');
+      else { BL_IMG_CACHE[bl_nr] = null; callback(''); }
+    });
+  };
+  tryFetch('png');
+}
+
 function mkFigCard(f){
   const c=mkEl('div','fig-card');
   const prisFremhævet = figSort==='pris';
@@ -562,9 +585,17 @@ function mkFigCard(f){
     if(hasBrugt) saetBadge=`<span class="badge-saet">📦 ${setInfo.brugt[0].split(' (#')[0]}</span>`;
     else if(hasUaabnet) saetBadge=`<span class="badge-saet badge-saet-uaabnet">🔒 ${setInfo.uaabnet[0].split(' (#')[0]}</span>`;
   }
-  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" src="https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.png" loading="eager" onerror="this.src='https://img.bricklink.com/ItemImage/MN/0/${f.bl_nr}.jpg';this.onerror=function(){this.parentNode.style.display='none';}"></div>`:"";
+  const figThumb=f.bl_nr&&f.bl_nr!=="None"?`<div class="fig-thumb-wrap"><img class="fig-thumb-img" id="blimg-${f.bl_nr}" src="" style="display:none"><div class="bl-img-placeholder" id="blph-${f.bl_nr}" style="width:36px;height:36px;background:var(--surface2);border-radius:6px"></div></div>`:"";
   c.innerHTML=`<div class="fig-top"><div class="badge badge-fig">Fig</div><div class="fig-info"><div class="fig-naam">${f.navn}</div><div class="fig-meta">${f.tema}${f.bl_nr&&f.bl_nr!=="None"?" · "+f.bl_nr:""}</div>${saetBadge}</div><div class="fig-right">${figThumb}${prisStr}</div></div>`;
-  c.onclick=()=>{haptic();openFigModal(f);}; return c;
+  c.onclick=()=>{haptic();openFigModal(f);}; 
+  if(f.bl_nr&&f.bl_nr!=="None"){
+    getBLImgSrc(f.bl_nr, src=>{
+      const img=c.querySelector('#blimg-'+f.bl_nr);
+      const ph=c.querySelector('#blph-'+f.bl_nr);
+      if(img&&src){img.src=src;img.style.display='';if(ph)ph.style.display='none';}
+    });
+  }
+  return c;
 }
 
 /* ---------- SÆT ---------- */
