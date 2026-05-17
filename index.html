@@ -304,7 +304,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="section-title" id="fig-tema-list-title" style="display:none">Temaer efter antal</div>
     <div class="tema-list" id="fig-tema-list" style="display:none"></div>
     <div id="fig-back-bar" style="display:none;padding:4px 16px 0;"><button onclick="figFilter='Alle';renderFigFilters();renderFigList();" style="background:none;border:none;color:var(--accent2);font-size:13px;font-weight:600;cursor:pointer;padding:4px 0;">‹ Tilbage til oversigt</button></div>
-    <div class="sort-bar">
+    <div class="sort-bar" id="fig-sort-bar">
       <span class="sort-label">Sorter:</span>
       <button class="sort-btn active" id="sort-figpris" onclick="setFigSort('pris')">Pris/stk</button>
       <button class="sort-btn" id="sort-figval" onclick="setFigSort('val')">Total værdi</button>
@@ -685,18 +685,16 @@ function renderFigList(){
   else if(figSort==='pris')items.sort((a,b)=>b.pris-a.pris||b.total-a.total);
   else if(figSort==='antal')items.sort((a,b)=>b.antal-a.antal);
   else if(figSort==='navn')items.sort((a,b)=>a.navn.localeCompare(b.navn,'da'));
+  const showOverview=(figFilter==='Alle'&&!figSearch);
+  const hide=v=>v?'none':'';
+  document.getElementById('fig-list').style.display=hide(showOverview);
+  document.getElementById('fig-count').style.display=hide(showOverview);
+  document.getElementById('fig-sort-bar').style.display=hide(showOverview);
+  if(showOverview)return;
   const tot=items.reduce((a,f)=>a+f.total,0);
   const cnt=items.reduce((a,f)=>a+f.antal,0);
-  // Show/hide list vs tema overview
-  const showOverview=(figFilter==='Alle'&&!figSearch);
+  document.getElementById('fig-count').textContent=`${items.length} typer · ${cnt} stk. · ${dkk(tot)}`;
   const listEl=document.getElementById('fig-list');
-  const countEl=document.getElementById('fig-count');
-  const sortBar=listEl.previousElementSibling;
-  listEl.style.display=showOverview?'none':'';
-  countEl.style.display=showOverview?'none':'';
-  if(sortBar&&sortBar.classList.contains('sort-bar'))sortBar.style.display=showOverview?'none':'';
-  if(showOverview)return;
-  countEl.textContent=`${items.length} typer · ${cnt} stk. · ${dkk(tot)}`;
   listEl.innerHTML='';
   if(!items.length){listEl.innerHTML='<div class="empty"><div class="empty-icon">🔍</div>Ingen figurer fundet</div>';return;}
   items.forEach(f=>listEl.appendChild(mkFigCard(f)));
